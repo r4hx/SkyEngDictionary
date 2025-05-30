@@ -1,0 +1,13 @@
+services:
+
+  dictionary:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CACHE_FULL: "docker.io/library"
+    container_name: dictionary
+    env_file:
+      - .env
+    restart : always
+    command: /bin/bash -c "python3 main.py"
