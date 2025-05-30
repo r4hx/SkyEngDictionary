@@ -7,8 +7,9 @@ This is a Telegram bot that sends words from your last Skyeng lesson once a day 
 1. Create a new Telegram bot with @BotFather and get its token.
 2. Get your Skyeng token from the browser cookies.
 3. Copy `.env.example` to `.env` and fill in all the environment variables.
-4. Build and run the Docker container with the `make up` command.
-5. The bot will send you all words from your last Skyeng lesson once a day at the specified time.
+4. Open `docker-compose.yaml` and specify your timezone in the `TZ` environment variable (e.g. `Europe/Moscow`).
+5. Build and run the Docker container with the `make up` command.
+6. The bot will send you all words from your last Skyeng lesson once a day at the specified time.
 
 ## How it works
 
