@@ -1,3 +1,6 @@
+x-common-variables: &global-vars
+  TZ: "Europe/Moscow"
+
 services:
 
   dictionary:
@@ -7,6 +10,8 @@ services:
       args:
         CACHE_FULL: "docker.io/library"
     container_name: dictionary
+    environment:
+      <<: *global-vars
     env_file:
       - .env
     restart : always
