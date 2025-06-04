@@ -1,3 +1,4 @@
+import argparse
 import logging
 import os
 import time
@@ -5,11 +6,20 @@ from dataclasses import dataclass
 
 import httpx
 import schedule
+from dotenv import load_dotenv
 
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
+
+parser = argparse.ArgumentParser(description="Skyeng Telegram Bot")
+parser.add_argument(
+    "--once", action="store_true", help="Запустить без планировщика один раз и выйти"
+)
+args = parser.parse_args()
+
+load_dotenv()
 
 skyeng_token = os.getenv("SKYENG_TOKEN")
 skyeng_student_id = os.getenv("SKYENG_STUDENT_ID")
@@ -101,13 +111,17 @@ class SkyengDictionaryApi:
         words = self.get_meanings(word_ids=meaning_ids)
         for word in words:
             examples = [w["text"] for w in word["examples"]]
+            try:
+                image = word["images"][0]["url"]
+            except IndexError:
+                image = ""
             result = Word(
                 word=word["text"],
                 definition=word["definition"]["text"],
                 translation=word["translation"]["text"],
                 transcription=word["transcription"],
                 example=examples,
-                image=word["images"][0]["url"],
+                image=image,
                 part_of_speech=word["partOfSpeechCode"],
             )
             words_store.append(result)
@@ -155,7 +169,12 @@ schedule.every().day.at(start_app).do(main)
 
 if __name__ == "__main__":
     logging.info("Service started")
-    logging.info("Service will start at %s", start_app)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    if args.once:
+        logging.info("Running once mode")
+        main()
+    else:
+        logging.info("Service will start at %s", start_app)
+        schedule.every().day.at(start_app).do(main)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
